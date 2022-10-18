@@ -57,7 +57,8 @@ OB_SERIALIZE_MEMBER(ObTransSSTableDurableCtxInfo, trans_table_info_, partition_,
     app_trace_id_str_, partition_log_info_arr_, prev_trans_arr_, can_elr_, max_durable_log_ts_, global_trans_version_,
     commit_log_checksum_, state_, prepare_version_, max_durable_sql_no_, trans_type_, elr_prepared_state_,
     is_dup_table_trans_, redo_log_no_, mutator_log_no_, stmt_info_, min_log_ts_, sp_user_request_, need_checksum_,
-    prepare_log_id_, prepare_log_timestamp_, clear_log_base_ts_, min_log_id_);
+    prepare_log_id_, prepare_log_timestamp_, clear_log_base_ts_, min_log_id_,
+    prev_checkpoint_id_, has_trans_state_log_);
 OB_SERIALIZE_MEMBER(ObXATransID, gtrid_str_, bqual_str_, format_id_);
 
 int64_t ObTransID::s_inc_num = 1;
@@ -1075,6 +1076,18 @@ void ObTransDesc::consistency_wait()
 
 void ObTransDesc::reset()
 {
+  if (OB_NOT_NULL(sche_ctx_)) {
+    need_print_trace_log_ = true;
+    if (EXECUTE_COUNT_PER_SEC(64)) {
+      TRANS_LOG(WARN, "reset trans desc without release sche ctx", K(*this), KP(sche_ctx_), "lbt", lbt());
+    }
+  }
+  if (OB_NOT_NULL(part_ctx_)) {
+    need_print_trace_log_ = true;
+    if (EXECUTE_COUNT_PER_SEC(64)) {
+      TRANS_LOG(WARN, "reset trans desc without release part ctx", K(*this), KP(part_ctx_), "lbt", lbt());
+    }
+  }
   if (need_print_trace_log_) {
     FORCE_PRINT_TRACE(&tlog_, "[trans error] ");
   }

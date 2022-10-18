@@ -1074,6 +1074,7 @@ int ObRawExprDeduceType::visit(ObAggFunRawExpr& expr)
       }
       case T_FUN_JSON_ARRAYAGG: {
         result_type.set_json();
+        result_type.set_length((ObAccuracy::DDL_DEFAULT_ACCURACY[ObJsonType]).get_length());
         expr.set_result_type(result_type);
         break;
       }
@@ -1095,6 +1096,7 @@ int ObRawExprDeduceType::visit(ObAggFunRawExpr& expr)
             need_add_cast = true;
           }
           result_type.set_json();
+          result_type.set_length((ObAccuracy::DDL_DEFAULT_ACCURACY[ObJsonType]).get_length());
           expr.set_result_type(result_type);
         }
         break;
@@ -2447,10 +2449,11 @@ int ObRawExprDeduceType::try_add_cast_expr_above_for_deduce_type(
     cast_dst_type.set_length(child_res_type.get_length());
   }
   OZ(ObRawExprUtils::try_add_cast_expr_above(expr_factory_, my_session_, expr, cast_dst_type, cm, new_expr));
-  if (OB_SUCC(ret)) {
-    ObRawExpr* e = new_expr;
-    while (NULL != e && e != &expr && T_FUN_SYS_CAST == e->get_expr_type()) {
-      e->add_flag(IS_OP_OPERAND_IMPLICIT_CAST);
+  ObRawExpr *e = new_expr;
+  while (OB_SUCC(ret) && NULL != e && e != &expr && T_FUN_SYS_CAST == e->get_expr_type()) {
+    if (OB_FAIL(e->add_flag(IS_OP_OPERAND_IMPLICIT_CAST))) {
+      LOG_WARN("failed to add flag", K(ret));
+    } else {
       e = e->get_param_expr(0);
     }
   }

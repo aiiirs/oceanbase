@@ -164,6 +164,7 @@ const int64_t OB_MAX_USER_TABLE_NAME_LENGTH_ORACLE =
 // The actual maximum table name length of table_schema (the index table will have an additional prefix, so the actual
 // length is greater than OB_MAX_USER_TABLE_NAME_LENGTH)
 const int64_t OB_MAX_TABLE_NAME_LENGTH = 256;
+const int64_t OB_MAX_SCHEMA_REF_INFO = 4096;
 const int64_t OB_MAX_TABLE_NAME_BUF_LENGTH = OB_MAX_TABLE_NAME_LENGTH + 1;
 const int64_t OB_MAX_PLAN_EXPLAIN_NAME_LENGTH = 256;
 const int64_t OB_MAX_TABLE_TYPE_LENGTH = 64;
@@ -1372,7 +1373,7 @@ const int64_t OB_MAX_MYSQL_RESPONSE_PACKET_SIZE = OB_MALLOC_BIG_BLOCK_SIZE;
 const int64_t MAX_FRAME_SIZE = OB_MALLOC_BIG_BLOCK_SIZE;
 
 /// Maximum number of elements/columns a row can contain
-const int64_t OB_USER_ROW_MAX_COLUMNS_COUNT = 512;
+const int64_t OB_USER_ROW_MAX_COLUMNS_COUNT = 4096;
 const int64_t OB_ROW_MAX_COLUMNS_COUNT =
     OB_USER_ROW_MAX_COLUMNS_COUNT + 2 * OB_USER_MAX_ROWKEY_COLUMN_NUMBER;  // used in ObRow
 const int64_t OB_DEFAULT_COL_DEC_NUM = common::OB_ROW_MAX_COLUMNS_COUNT / 80;
